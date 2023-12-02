@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Track</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Albums App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/allTrackPlaylist">All Playlist</a>-->
+<!--                </li>-->
+                <li class="nav-item">
+                    <a class="nav-link" href="/albums">All Albums</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/create">Add Album</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/createpl">Add Playlist</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/artists">All Artists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/createar">Add Artist</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tracks">All Tracks</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <h1 class="my-5">Track</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Duration</th>
+            <th>Album</th>
+            <th>Artist</th>
+            <th>Label</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+<!--        th:each="track1 : ${track}"-->
+        <tr>
+            <td th:text="${track.id}"></td>
+            <td th:text="${track.name}"></td>
+            <td th:text="${track.duration}"></td>
+            <td th:text="${track.idAlbum.name}"></td>
+            <td th:text="${track.trackLabel.idArtist.name}"></td>
+            <td th:text="${track.trackLabel.idRecordLabel.name}"></td>
+            <td>
+                <form th:action="@{/deletet/{id}(id=${track.id})}" method="post">
+                    <input type="hidden" name="id_album" th:value="${track.id}"/>
+                    <button type="submit">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <h1 class="my-5">Add to playlist</h1>
+    <form th:action="@{/playlists/add-track/{trackId}(trackId=${track.id})}" method="post">
+<!--        <input type="number" name="id_track" value="<track_id_here>"/>-->
+<!--        <input type="number" name="id_playlist" value="<playlist_id_here>"/>-->
+        <div>
+            <label for="playlist">Playlist:</label>
+            <select name="playlistId" id="playlist" class="form-control">
+                <option th:each="playlist : ${playlists}"
+                        th:text="${playlist.name}"
+                        th:value="${playlist.id}">
+            </select>
+        </div>
+        <button style="margin-top: 20px" type="submit">Add Track to Playlist</button>
+    </form>
+    <h1 class="my-5">Update Forms For Tracks</h1>
+    <form th:action="@{/update-tracks}" th:object="${track}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" th:field="*{trackLabel.id}"/>
+        <div class="form-group">
+         <label for="name">Name:</label>
+        <input type="text" id="name" class="form-control" th:field="*{name}" required>
+        </div>
+       <!-- <label for="id_album">Album ID:</label>
+        <input type="number" id="id_album" th:field="*{idAlbum.id}" required><br><br>-->
+        <div>
+            <label for="album">Album:</label>
+            <select name="album" th:field="*{idAlbum.id}" id="album" class="form-control">
+                <option th:each="album : ${albums}"
+                        th:text="${album.name}"
+                        th:value="${album.id}">
+            </select>
+        </div>
+        <div>
+            <label for="artist">Artist:</label>
+            <select name="artist" th:field="*{trackLabel.idArtist.id}" id="artist" class="form-control">
+                <option th:each="artist : ${artists}"
+                        th:text="${artist.name}"
+                        th:value="${artist.id}">
+            </select>
+        </div>
+        <div>
+            <label for="label">Label:</label>
+            <select name="label" th:field="*{trackLabel.idRecordLabel.id}" id="label" class="form-control">
+                <option th:each="label : ${labels}"
+                        th:text="${label.name}"
+                        th:value="${label.id}">
+            </select>
+        </div>
+        <div class="form-group">
+        <label for="duration">Duration:</label>
+        <input type="text" id="duration" class="form-control" th:field="*{duration}" required>
+        </div>
+        <div class="form-group">
+            <label for="year_edition">Year Edition:</label>
+            <input type="text" id="year_edition" class="form-control" th:field="*{trackLabel.yearEdition}" required>
+        </div>
+        <button style="margin-bottom: 20px" type="submit">Update track</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNSLrO1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
